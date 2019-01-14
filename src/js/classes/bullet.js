@@ -1,5 +1,6 @@
-class BulletObj {
+class BulletObj extends EntityObj {
 	constructor(canvas, x, y) {
+        super(canvas);
 		this.speed = 2;
 		this.canMove = true;
 		this.inMotion = false;
@@ -8,6 +9,7 @@ class BulletObj {
 		this.x = x - this.width / 2;
         this.y = y - 5;
         this.remove = false;
+        this.canCollide = true;
 	}
 	move() {
         this.y -= this.speed;

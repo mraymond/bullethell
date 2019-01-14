@@ -8,6 +8,7 @@ class EntityObj {
 		this.x = canvas.width / 2 - this.width / 2;
 		this.y = canvas.height - this.height - 10;
 		this.remove = false;
+		this.canCollide = false;
 	}
 	move(x,y) {
 		this.x = x;

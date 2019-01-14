@@ -1,4 +1,4 @@
-var canvas, context, entities = [], playerEntity;
+var canvas, context, entities = [], playerEntity, clickHandlers = [];
 var shouldRender = true;
 init();
 render();
@@ -9,6 +9,12 @@ function init() {
 	playerEntity = new PlayerObj(canvas);
 	entities.push(playerEntity);
 	window.addEventListener("keydown", onKeyDown, false);
+	canvas.addEventListener("click", onClick, false);
+}
+
+function startOver() {
+	entities = [];
+	entities.push(playerEntity);
 }
 
 function onKeyDown(e) {
@@ -24,23 +30,24 @@ function fireBullet() {
 }
 
 function render() {
-	context.clearRect(0, 0, canvas.width, canvas.height);
+	clearCanvas()
 	drawBackground();
-	entities.forEach((entity, index, object) => {
+	entities.every((entity, index, object) => {
 		entity.render(context);
-		if (entity !== playerEntity) {
+		if (entity.canCollide && entity !== playerEntity) {
 			if (checkCollision(entity, playerEntity)) {
 				gameOver();
-				entities = [];
-				shouldRender = false;
+				//entities = [];
+				//shouldRender = false;
+				return false;
 			}
 		}
 		if (entity.remove) {
 			object.splice(index, 1);
 		}
+		return true;
 	});
 	if (shouldRender) {
-		console.log('?');
 		window.requestAnimationFrame(render);
 	}
 }
@@ -60,11 +67,51 @@ function drawBackground() {
 	context.fillRect(0, 0, canvas.height, canvas.width);
 }
 
-function gameOver() {
+function clearCanvas() {
 	context.clearRect(0, 0, canvas.width, canvas.height);
-	drawBackground();
-	context.fillStyle = "#ff0000";
-	context.textAlign = "center"; 
-	context.font = '48px Arial';
-	context.fillText('GAME OVER', canvas.width/2, canvas.height/2);
+}
+
+function gameOver() {
+	entities = [];
+	entities.push(new TextObj(canvas,
+		canvas.width/2,
+		canvas.height/2,
+		'GAME OVER',
+		{
+			color: '#ff0000',
+			textAlign: 'center',
+			font: '48px Arial',
+		}
+	));
+	var newGame = new TextObj(canvas,
+		canvas.width/2,
+		canvas.height/2+60,
+		'PLAY AGAIN?',
+		{
+			color: '#00FF00',
+			textAlign: 'start',
+			font: '48px Arial',
+		}
+	);
+	addClickEvent(newGame, startOver);
+	entities.push(newGame);
+}
+
+function addClickEvent(entity, callback) {
+	clickHandlers.push({
+		entity: entity,
+		callback: callback,
+	})
+}
+
+function onClick(event) {
+	var x = event.pageX - canvas.offsetLeft,
+        y = event.pageY - canvas.offsetTop;
+	clickHandlers.forEach(function(handler) {
+		console.log(x, y, handler);
+		if (y < handler.entity.y && y > handler.entity.y - handler.entity.height 
+            && x > handler.entity.x && x < handler.entity.x + handler.entity.width) {
+            handler.callback();
+        }
+	});
 }

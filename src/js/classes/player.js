@@ -4,6 +4,7 @@ class PlayerObj extends EntityObj {
 		this.speed = 4;
 		this.canMove = true;
 		this.inMotion = false;
+		this.canCollide = true;
 		this.width = 30;
 		this.height = 30;
 		this.x = canvas.width / 2 - this.width / 2;
