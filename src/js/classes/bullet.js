@@ -1,5 +1,5 @@
 class BulletObj extends EntityObj {
-	constructor(canvas, x, y) {
+	constructor(canvas, x, y, friendly) {
         super(canvas);
 		this.speed = 2;
 		this.canMove = true;
@@ -9,7 +9,8 @@ class BulletObj extends EntityObj {
 		this.x = x - this.width / 2;
         this.y = y - 5;
         this.remove = false;
-        this.canCollide = true;
+		this.canCollide = true;
+		this.friendly = friendly
 	}
 	move() {
         this.y -= this.speed;

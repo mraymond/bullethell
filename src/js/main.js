@@ -3,6 +3,8 @@ var shouldRender = true;
 init();
 render();
 
+var enemySpawner;
+
 function init() {
 	canvas = document.getElementById("canvas");
 	context = canvas.getContext("2d");
@@ -10,11 +12,13 @@ function init() {
 	entities.push(playerEntity);
 	window.addEventListener("keydown", onKeyDown, false);
 	canvas.addEventListener("click", onClick, false);
+	enemySpawner = setInterval(createEnemy, 5000);
 }
 
 function startOver() {
 	entities = [];
 	entities.push(playerEntity);
+	enemySpawner = setInterval(createEnemy, 5000);
 }
 
 function onKeyDown(e) {
@@ -23,6 +27,10 @@ function onKeyDown(e) {
 			fireBullet();
 			break;
 	}
+}
+
+function createEnemy() {
+	entities.push(new EnemyObj(canvas, Math.random()*canvas.width, 0));
 }
 
 function fireBullet() {
@@ -37,12 +45,11 @@ function render() {
 		if (entity.canCollide && entity !== playerEntity) {
 			if (checkCollision(entity, playerEntity)) {
 				gameOver();
-				//entities = [];
-				//shouldRender = false;
 				return false;
 			}
 		}
 		if (entity.remove) {
+			console.log('removing');
 			object.splice(index, 1);
 		}
 		return true;
@@ -72,6 +79,7 @@ function clearCanvas() {
 }
 
 function gameOver() {
+	clearInterval(enemySpawner);
 	entities = [];
 	entities.push(new TextObj(canvas,
 		canvas.width/2,
